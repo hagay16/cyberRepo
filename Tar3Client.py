@@ -18,7 +18,7 @@ while True:
 
     # Do not waste the server's time with illegal commands
     if msg not in VALID_COMMANDS:
-        print("invalid command")
+        print("invalid command, Enter TIME, NAME, RAND or EXIT: ")
         continue
 
     try:
