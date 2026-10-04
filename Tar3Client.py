@@ -4,43 +4,56 @@ import socket
 PORT = 1450
 VALID_COMMANDS = ["TIME", "NAME", "RAND", "EXIT"]
 
-mysock = socket.socket()
+
+def recv_response(sock):
+    """
+    Receive a response from the server.
+    first receives 4 bytes of the response length,
+    then receives the response itself.
+    return: response from server
+    """
+    length = int(sock.recv(4).decode())
+    data = sock.recv(length).decode()
+
+    return data
+
+
+my_sock = socket.socket()
 
 try:
-    mysock.connect(("127.0.0.1", PORT))
+    my_sock.connect(("127.0.0.1", PORT))
 except Exception as e:
-    mysock.close()
-    exit(f"server is down, try again later: {str(e)}")
+    my_sock.close()
+    exit(f"server is down - try again later: {str(e)}")
 
 
 while True:
-    msg = input("Enter TIME, NAME, RAND or EXIT: ").upper()
+    command = input(
+        "enter TIME, NAME, RAND or EXIT: "
+    ).upper()
 
-    # Do not waste the server's time with illegal commands
-    if msg not in VALID_COMMANDS:
-        print("invalid command, Enter TIME, NAME, RAND or EXIT: ")
+    # Validation is outside try
+    if command not in VALID_COMMANDS:
+        print("invalid command - try again")
         continue
 
     try:
-        # Every valid command is exactly 4 bytes
-        mysock.sendall(msg.encode())
-
-        if msg == "EXIT":
-            break
-
-        # First receive 4 bytes containing response length
-        length_data = mysock.recv(4).decode()
-        response_length = int(length_data)
-
-        # Then receive the actual response
-        data = mysock.recv(response_length).decode()
-
-        print(f"server sent - {data}")
-
+        my_sock.sendall(command.encode())
     except Exception as e:
-        print(f"error in receiving or sending data: {str(e)}")
+        print(f"error sending data: {str(e)}")
         break
 
+    if command == "EXIT":
+        break
 
-mysock.close()
+    try:
+        response = recv_response(my_sock)
+    except Exception as e:
+        print(f"error receiving data: {str(e)}")
+        break
+
+    print(response)
+
+
+my_sock.close()
 print("goodbye")
