@@ -7,18 +7,20 @@ PORT = 1450
 
 
 def send_file(sock, file_path):
+    """
+    Sends an image file to the server.
+    """
     file_name = os.path.basename(file_path)
 
     with open(file_path, "rb") as f:
         file_data = f.read()
 
-    file_name_bytes = file_name.encode()
-
-    file_name_len = str(len(file_name_bytes)).zfill(2)
+    file_name_data = file_name.encode()
+    file_name_len = str(len(file_name_data)).zfill(2)
     file_data_len = str(len(file_data)).zfill(6)
 
     sock.sendall(file_name_len.encode())
-    sock.sendall(file_name_bytes)
+    sock.sendall(file_name_data)
     sock.sendall(file_data_len.encode())
     sock.sendall(file_data)
 
