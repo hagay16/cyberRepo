@@ -29,7 +29,7 @@ def recv_image(client_socket, file_name, file_data_len):
     os.makedirs(SAVE_FOLDER, exist_ok=True)
     file_path = os.path.join(SAVE_FOLDER, os.path.basename(file_name))
 
-    with open(file_path, "wb") as f:
+    with open(file_path, "wb") as f: #open destination file and write image bytes
         f.write(file_data)
 
     print(f"image saved: {file_path}")
