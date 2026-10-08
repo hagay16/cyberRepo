@@ -28,9 +28,7 @@ except Exception as e:
 
 
 while True:
-    command = input(
-        "enter TIME, NAME, RAND or EXIT: "
-    ).upper()
+    command = input("enter TIME, NAME, RAND or EXIT: ").upper()
 
     # Validation is outside try
     if command not in VALID_COMMANDS:
