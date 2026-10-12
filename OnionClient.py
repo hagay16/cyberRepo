@@ -3,8 +3,14 @@ import socket
 
 PORT = 1450
 
+def layer1(data):
+    """add first layer to data: layer 1 = 'layer1' ten times"""
+    for t in range(10):
+        data += 'layer1'
 
-
+def layer2(data):
+    for t in range(10):
+        data +=
 
 
 my_sock = socket.socket()
@@ -19,7 +25,13 @@ except Exception as e:
 
 while True:
     command = input("Enter message or exit")
+    command.upper()
+    if command == "EXIT" :
+        break
 
+
+
+    #delayer
 
 
 
