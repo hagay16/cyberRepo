@@ -10,7 +10,7 @@ def layer1(data):
 
 def layer2(data):
     for t in range(10):
-        data +=
+        data=5#add layer 2
 
 
 my_sock = socket.socket()
