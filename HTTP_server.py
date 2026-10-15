@@ -1,4 +1,10 @@
 import socket
+import platform
+import os
+import subprocess
+
+SYSTEMNAME = platform.system()
+
 
 def getURL(ans):
     """
@@ -13,6 +19,22 @@ def getURL(ans):
         url = params[1]
     return url[1:]
 
+def getData(url):
+    file_info = None
+
+    if SYSTEMNAME == "Windows":
+        url = "\\" + url
+    else:
+        url = "/" + url
+
+
+    if os.path.isfile(url):
+        with open(url , 'rb') as file:
+            data = file.read()
+            file_info = data
+    return file_info
+
+
 
 
 server_socket = socket.socket()
@@ -26,8 +48,10 @@ while True:
 
     try:
         data = client_socket.recv(1024).decode()
+
     except Exception as e:
         print(f"error in receive {str(e)}")
+        break
     else:
         print(data)
 
@@ -35,9 +59,14 @@ while True:
 
 
     if url:
-        ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(len(url))}\r\n\r\n{url}"
+        file_info = getData(url)
+        ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(len(url))}\r\n\r\n{file_info}"
 
         try:
             data = client_socket.send(ans.encode())
         except Exception as e:
             print(f"error in receive {str(e)}")
+
+    client_socket.close()
+
+server_socket.close()
