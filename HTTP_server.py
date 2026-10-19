@@ -17,22 +17,20 @@ def getURL(ans):
     params = line1.split(' ')
     if len(params) == 3 and params[0] == 'GET' and params[2] == "HTTP/1.1":
         url = params[1]
+    if url == "/":
+        url = "/My_html.html"
     return url[1:]
 
 def getData(url):
     file_info = None
-
-    if SYSTEMNAME == "Windows":
-        url = "\\" + url
-    else:
-        url = "/" + url
-
+    file_len = None
 
     if os.path.isfile(url):
         with open(url , 'rb') as file:
             data = file.read()
+            file_len = len(data)
             file_info = data
-    return file_info
+    return file_info,file_len
 
 
 
@@ -42,9 +40,13 @@ server_socket.bind(("0.0.0.0", 80)) #if 80 not work do 8080
 server_socket.listen(3)
 
 
+no_access = ["C:/Users/talmid/PycharmProjects/cyberRepo/cowboy.png"]
+
 while True:
     client_socket, addr = server_socket.accept()
     print(f"{addr[0]} - connected")
+
+
 
     try:
         data = client_socket.recv(1024).decode()
@@ -59,11 +61,20 @@ while True:
 
 
     if url:
-        file_info = getData(url)
-        ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(len(url))}\r\n\r\n{file_info}"
+        file_info, file_len = getData(url)
+
+        if url not in no_access:
+            ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(file_len)}\r\n\r\n"
+
+        else:
+            ans = f"HTTP/1.1 403 Forbidden\r\nContent-Length:0\r\n\r\n"
+
+        if not file_info:
+            ans = f"HTTP/1.1 404 Not Found\r\nContent-Length:0\r\n\r\n"
 
         try:
-            data = client_socket.send(ans.encode())
+            client_socket.send(ans.encode())
+            client_socket.send(file_info)
         except Exception as e:
             print(f"error in receive {str(e)}")
 
