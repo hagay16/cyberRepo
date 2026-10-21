@@ -41,7 +41,7 @@ def getData(url):
 
 
 server_socket = socket.socket()
-server_socket.bind(("0.0.0.0", 8081)) #if 80 not work do 8080
+server_socket.bind(("0.0.0.0", 8080)) #if 80 not work do 8080
 server_socket.listen(3)
 
 
