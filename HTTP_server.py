@@ -22,25 +22,33 @@ def getURL(ans):
     return url[1:]
 
 def getData(url):
+    """
+    Read the requested file.
+    :param url: File path
+    :return: File content and length
+    """
     file_info = None
     file_len = None
 
     if os.path.isfile(url):
-        with open(url , 'rb') as file:
-            data = file.read()
-            file_len = len(data)
-            file_info = data
-    return file_info,file_len
+        with open(url, 'rb') as file:
+            file_info = file.read()
+            file_len = len(file_info)
+
+    return file_info, file_len
 
 
 
 
 server_socket = socket.socket()
-server_socket.bind(("0.0.0.0", 80)) #if 80 not work do 8080
+server_socket.bind(("0.0.0.0", 8081)) #if 80 not work do 8080
 server_socket.listen(3)
 
 
-no_access = ["C:/Users/talmid/PycharmProjects/cyberRepo/cowboy.png"]
+no_access = ["cowboy.png"]
+
+redirects = {"page1.txt": "page2.txt"}
+
 
 while True:
     client_socket, addr = server_socket.accept()
@@ -61,16 +69,27 @@ while True:
 
 
     if url:
-        file_info, file_len = getData(url)
+        if url in redirects:
+            url = redirects[url]
 
-        if url not in no_access:
-            ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(file_len)}\r\n\r\n"
+        if url == "server":
+            ans = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n"
+            file_info = None
 
-        else:
-            ans = f"HTTP/1.1 403 Forbidden\r\nContent-Length:0\r\n\r\n"
+        elif url in no_access:
+            ans = "HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n"
+            file_info = None
 
-        if not file_info:
-            ans = f"HTTP/1.1 404 Not Found\r\nContent-Length:0\r\n\r\n"
+
+
+        else :
+            file_info, file_len = getData(url)
+
+            if file_info is None:
+                ans = f"HTTP/1.1 404 Not Found\r\nContent-Length:0\r\n\r\n"
+            else:
+                ans = f"HTTP/1.1 200 OK\r\nContent-Length: {str(file_len)}\r\n\r\n"
+
 
         try:
             client_socket.send(ans.encode())
