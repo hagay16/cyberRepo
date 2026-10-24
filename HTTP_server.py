@@ -41,11 +41,11 @@ def getData(url):
 
 
 server_socket = socket.socket()
-server_socket.bind(("0.0.0.0", 8080)) #if 80 not work do 8080
+server_socket.bind(("0.0.0.0", 8081)) #if 80 not work do 8080
 server_socket.listen(3)
 
 
-no_access = ["cowboy.png"]
+no_access = ["secret.txt"]
 
 redirects = {"page1.txt": "page2.txt"}
 
@@ -70,11 +70,30 @@ while True:
 
     if url:
         if url in redirects:
-            url = redirects[url]
+            ans = f"HTTP/1.1 301 Moved Permanently\r\nLocation: /{redirects[url]}\r\nContent-Length: 0\r\n\r\n"
+            file_info = None
 
-        if url == "server":
+        elif url == "server":
             ans = "HTTP/1.1 500 Internal Server Error\r\nContent-Length: 0\r\n\r\n"
             file_info = None
+
+        elif url == "calculate-next":
+            file_info = b"5"
+            ans = "HTTP/1.1 200 OK\r\nContent-Length: 1\r\n\r\n"
+
+        elif url.startswith("calculate-next?num="):
+            num = int(url.split("=")[1])
+            file_info = str(num + 1).encode()
+            ans = f"HTTP/1.1 200 OK\r\nContent-Length: {len(file_info)}\r\n\r\n"
+
+        elif url.startswith("calculate-area?"):
+            params = url.split("?")[1].split("&")
+            height = float(params[0].split("=")[1])
+            width = float(params[1].split("=")[1])
+
+            area = height * width / 2
+            file_info = str(area).encode()
+            ans = f"HTTP/1.1 200 OK\r\nContent-Length: {len(file_info)}\r\n\r\n"
 
         elif url in no_access:
             ans = "HTTP/1.1 403 Forbidden\r\nContent-Length: 0\r\n\r\n"
