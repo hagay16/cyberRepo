@@ -3,7 +3,7 @@ myface = conf.route.route("8.8.8.8")[0]
 
 
 def HTTPFilter(p):
-    return TCP in p and Raw in p  and b'GET' in p[Raw].load
+    return TCP in p and Raw in p  and p[Raw].load.startswith(b'GET')
 
 
 def HTTPrint(p):
@@ -18,5 +18,6 @@ def DNSPrint(pack):
     print(pack[DNSQR].qname.decode())
 
 p = sniff(iface=myface,count=10, lfilter=HTTPFilter, prn=HTTPrint)
+
 
 
