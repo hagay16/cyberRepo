@@ -119,7 +119,7 @@ def send_image(client_socket, url):
         client_socket.sendall(response.encode() + img_data)
 
 server_socket = socket.socket()
-server_socket.bind(("0.0.0.0", 8080)) #if 80 not work do 8080
+server_socket.bind(("0.0.0.0", 8083)) #if 80 not work do 8080
 server_socket.listen(3)
 
 
@@ -132,7 +132,7 @@ while True:
     if headers.startswith("GET"):
         url = getURL(headers)
 
-        if url.startswith("/image?img-name="):
+        if url.startswith("image?img-name="):
             send_image(client_socket, url)
 
     
